@@ -1,0 +1,16 @@
+{
+  "name": "Raku-Redux",
+  "description": "Redux-style state management for Raku",
+  "version": "0.1",
+  "perl": "6.*",
+  "auth": "Jack Miles",
+  "depends": [],
+  "build-depends": [],
+  "test-depends": [],
+  "provides": {
+    "Redux": "lib/Redux.pm6"
+  },
+  "resources": [],
+  "license": "MIT",
+  "source-url": "https://github.com/caseyjackmiles/raku-redux"
+}
