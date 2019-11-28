@@ -1,9 +1,14 @@
 use Test;
 use Redux;
 
-plan 1;
+my $state = 1;
+my &mock-reducer = -> $, $action { $action.type };
+my $action = Redux::Action.new(type => 'ACTIONTYPE');
+my $store = Redux::Store.new(app-state => $state, reducer => &mock-reducer);
 
-my $store = Redux::Store.new(app-state => 1, reducer => -> {});
-ok $store.get-state == 1, 'get-state should return state';
+ok $store.get-state == $state, 'state should be accessible through get-state';
+
+$store.dispatch($action);
+ok $store.get-state eq $action.type, 'state is modified with dispatch';
 
 done-testing;
