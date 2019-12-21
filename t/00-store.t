@@ -1,8 +1,6 @@
 use Test;
 use Redux;
 
-plan 2;
-
 my $state = 1;
 my $was-invoked = False;
 my &mock-reducer = -> $, $ { $was-invoked = True; }
@@ -17,7 +15,6 @@ subtest 'Store dispatch', {
   ok $was-invoked, 'dispatch invokes the reducer function';
 
   subtest 'invokes listeners', {
-    plan 1;
     my $was-invoked = False;
     my &listener = -> { $was-invoked = True; }
     my $store = Redux::Store.new(
@@ -27,6 +24,34 @@ subtest 'Store dispatch', {
     $store.dispatch($action);
 
     ok $was-invoked, 'subscribed listener is invoked after dispatch';
+  }
+}
+
+subtest 'Store subscribe', {
+  my $invoked = False;
+  my &listener = -> { $invoked = True; }
+
+  subtest 'adds to listeners', {
+    my $store = Redux::Store.new(app-state => [], reducer => -> {});
+    ok $store.listeners.elems == 0, 'initial store has 0 listeners';
+    $store.subscribe(&listener);
+    ok $store.listeners.elems == 1, 'listener was added to store';
+    ok $store.listeners[0] === &listener, 'listener was added to store';
+  }
+
+  subtest 'returns unsubscriber', {
+    my $store = Redux::Store.new(app-state => [], reducer => -> $,$ {} );
+    ok $store.listeners.elems == 0, 'initial store has 0 listeners';
+    my &unsubscribe = $store.subscribe(&listener);
+    ok $store.listeners.elems == 1, 'listener was added to store';
+    $store.dispatch($action);
+    ok $invoked, 'listener should be invoked';
+
+    &unsubscribe();
+    $invoked = False;
+    $store.dispatch($action);
+    is $invoked, False, 'listener not invoked after unsubscribing';
+    is ($store.listeners.first: &listener), Nil, 'unsubscribe removes listener';
   }
 }
 

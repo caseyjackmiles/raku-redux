@@ -1,7 +1,5 @@
 unit module Redux;
 
-constant &no-op = -> {};
-
 role Action is export {
   has Str $.type is required;
 }
@@ -9,7 +7,7 @@ role Action is export {
 class Store is export {
   has $!app-state is required;
   has &!reducer is required;
-  has @.listeners = ();
+  has @.listeners;
 
   submethod BUILD(:$!app-state, :&!reducer) { }
 
@@ -21,9 +19,8 @@ class Store is export {
     $!app-state = &!reducer($!app-state, $action);
 
     # Invoke each subscribed listener.
-    # If a listener is undefined, invoke a no-op.
     # TODO: Convert to Supply/Tap API
-    for @.listeners { $^listener() // no-op() }
+    for @.listeners { &^listener(); }
     return $action;
   }
 
@@ -31,7 +28,7 @@ class Store is export {
     # TODO: Convert to Supply/Tap API
     @.listeners.push(&listener);
     my $index = @.listeners.end;
-    return -> { @.listeners[$index]:delete; @.listeners[$index] = no-op; };
+    return -> { @.listeners[$index]:delete; }
   }
 
   # method replaceReducer {}
