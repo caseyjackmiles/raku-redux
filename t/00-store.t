@@ -29,7 +29,8 @@ subtest 'Store dispatch', {
 
 subtest 'Store subscribe', {
   my $invoked = False;
-  my &listener = -> { $invoked = True; }
+  my &listener =  -> { $invoked = True; };
+  my &listener2 = -> { };
 
   subtest 'adds to listeners', {
     my $store = Redux::Store.new(app-state => [], reducer => -> {});
@@ -43,15 +44,17 @@ subtest 'Store subscribe', {
     my $store = Redux::Store.new(app-state => [], reducer => -> $,$ {} );
     ok $store.listeners.elems == 0, 'initial store has 0 listeners';
     my &unsubscribe = $store.subscribe(&listener);
-    ok $store.listeners.elems == 1, 'listener was added to store';
+    $store.subscribe(&listener2);
+    ok $store.listeners.elems == 2, 'listeners added to store';
     $store.dispatch($action);
-    ok $invoked, 'listener should be invoked';
+    ok $invoked, 'listeners should be invoked';
 
     &unsubscribe();
+    ok $store.listeners.elems == 2, 'listener is removed after unsubscribing';
     $invoked = False;
     $store.dispatch($action);
     is $invoked, False, 'listener not invoked after unsubscribing';
-    is ($store.listeners.first: &listener), Nil, 'unsubscribe removes listener';
+    is ($store.listeners.first: * === &listener), Nil, 'unsubscribe removes listener';
   }
 }
 

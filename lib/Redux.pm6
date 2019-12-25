@@ -7,28 +7,27 @@ role Action is export {
 class Store is export {
   has $!app-state is required;
   has &!reducer is required;
-  has @.listeners;
+  has Callable @.listeners;
 
   submethod BUILD(:$!app-state, :&!reducer) { }
 
   method get-state {
-    return $!app-state;
+    $!app-state;
   }
 
   method dispatch(Action $action) {
     $!app-state = &!reducer($!app-state, $action);
 
-    # Invoke each subscribed listener.
     # TODO: Convert to Supply/Tap API
-    for @.listeners { &^listener(); }
-    return $action;
+    for @.listeners { $_() with $_; } # invoke each subscribed listener
+    $action;
   }
 
   method subscribe(&listener) {
     # TODO: Convert to Supply/Tap API
     @.listeners.push(&listener);
     my $index = @.listeners.end;
-    return -> { @.listeners[$index]:delete; }
+    -> { @.listeners[$index]:delete; }; # unsubscribes listener when invoked
   }
 
   # method replaceReducer {}
