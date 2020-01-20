@@ -58,4 +58,14 @@ subtest 'Store subscribe', {
   }
 }
 
+subtest 'replace-reducer', {
+  my &original = -> $,$ { 'Original reducer' };
+  my $store = Redux::Store.new(app-state => [], reducer => &original);
+
+  my &new = -> $,$ { 'New reducer' };
+  $store.replace-reducer(&new);
+  $store.dispatch(Redux::Action.new(type => 'action'));
+  is $store.get-state, 'New reducer', 'reducer is replaced';
+}
+
 done-testing;

@@ -30,5 +30,7 @@ class Store is export {
     -> { @.listeners[$index]:delete; }; # unsubscribes listener when invoked
   }
 
-  # method replaceReducer {}
+  method replace-reducer(&next-reducer) {
+    &!reducer = &next-reducer;
+  }
 }
