@@ -5,7 +5,7 @@ my $state = 1;
 my $was-invoked = False;
 my &mock-reducer = -> $, $ { $was-invoked = True; }
 my $action = Redux::Action.new(type => 'ACTIONTYPE');
-my $store = Redux::Store.new(app-state => $state, reducer => &mock-reducer);
+my $store = Redux::Store.new(state => $state, reducer => &mock-reducer);
 
 ok $store.get-state == $state, 'state should be accessible through get-state';
 
@@ -18,7 +18,7 @@ subtest 'Store dispatch', {
     my $was-invoked = False;
     my &listener = -> { $was-invoked = True; }
     my $store = Redux::Store.new(
-            app-state => $state,
+            state => $state,
             reducer => &mock-reducer);
     $store.subscribe(&listener);
     $store.dispatch($action);
@@ -33,7 +33,7 @@ subtest 'Store subscribe', {
   my &listener2 = -> { };
 
   subtest 'adds to listeners', {
-    my $store = Redux::Store.new(app-state => [], reducer => -> {});
+    my $store = Redux::Store.new(state => [], reducer => -> {});
     ok $store.listeners.elems == 0, 'initial store has 0 listeners';
     $store.subscribe(&listener);
     ok $store.listeners.elems == 1, 'listener was added to store';
@@ -41,7 +41,7 @@ subtest 'Store subscribe', {
   }
 
   subtest 'returns unsubscriber', {
-    my $store = Redux::Store.new(app-state => [], reducer => -> $,$ {} );
+    my $store = Redux::Store.new(state => [], reducer => -> $,$ {} );
     ok $store.listeners.elems == 0, 'initial store has 0 listeners';
     my &unsubscribe = $store.subscribe(&listener);
     $store.subscribe(&listener2);
@@ -60,7 +60,7 @@ subtest 'Store subscribe', {
 
 subtest 'replace-reducer', {
   my &original = -> $,$ { 'Original reducer' };
-  my $store = Redux::Store.new(app-state => [], reducer => &original);
+  my $store = Redux::Store.new(state => [], reducer => &original);
 
   my &new = -> $,$ { 'New reducer' };
   $store.replace-reducer(&new);
