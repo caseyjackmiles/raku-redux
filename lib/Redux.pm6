@@ -19,15 +19,14 @@ class Store is export {
     $!app-state = &!reducer($!app-state, $action);
 
     # TODO: Convert to Supply/Tap API
-    for @.listeners { $_() with $_; } # invoke each subscribed listener
+    for @.listeners { $_() } # invoke each subscribed listener
     $action;
   }
 
   method subscribe(&listener) {
     # TODO: Convert to Supply/Tap API
     @.listeners.push(&listener);
-    my $index = @.listeners.end;
-    -> { @.listeners[$index]:delete; }; # unsubscribes listener when invoked
+    -> { @.listeners = @.listeners.grep({ !($_ === &listener) }) }; # unsubscribes listener when invoked
   }
 
   method replace-reducer(&next-reducer) {

@@ -49,8 +49,8 @@ subtest 'Store subscribe', {
     $store.dispatch($action);
     ok $invoked, 'listeners should be invoked';
 
-    &unsubscribe();
-    ok $store.listeners.elems == 2, 'listener is removed after unsubscribing';
+    unsubscribe();
+    ok $store.listeners.elems == 1, 'listener is removed after unsubscribing';
     $invoked = False;
     $store.dispatch($action);
     is $invoked, False, 'listener not invoked after unsubscribing';
