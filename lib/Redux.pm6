@@ -23,7 +23,8 @@ class Store is export {
     $action;
   }
 
-  method subscribe(&listener) {
+  method subscribe(&listener --> Callable) {
+    return -> {} without &listener;
     # TODO: Convert to Supply/Tap API
     @.listeners.push(&listener);
     -> { @.listeners = @.listeners.grep({ !($_ === &listener) }) }; # unsubscribes listener when invoked

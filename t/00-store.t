@@ -32,6 +32,13 @@ subtest 'Store subscribe', {
   my &listener =  -> { $invoked = True; };
   my &listener2 = -> { };
 
+  subtest 'does not add undefined listeners', {
+    my $store = Redux::Store.new(state => [], reducer => -> {});
+    my &undefined;
+    $store.subscribe(&undefined);
+    ok $store.listeners.elems == 0, 'undefined listeners are not added';
+  }
+
   subtest 'adds to listeners', {
     my $store = Redux::Store.new(state => [], reducer => -> {});
     ok $store.listeners.elems == 0, 'initial store has 0 listeners';
