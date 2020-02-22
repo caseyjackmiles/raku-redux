@@ -44,7 +44,7 @@ subtest 'Store subscribe', {
     ok $store.listeners.elems == 0, 'initial store has 0 listeners';
     $store.subscribe(&listener);
     ok $store.listeners.elems == 1, 'listener was added to store';
-    ok $store.listeners[0] === &listener, 'listener was added to store';
+    ok &listener (elem) $store.listeners, 'listener was added to store';
   }
 
   subtest 'returns unsubscriber', {
@@ -61,7 +61,7 @@ subtest 'Store subscribe', {
     $invoked = False;
     $store.dispatch($action);
     is $invoked, False, 'listener not invoked after unsubscribing';
-    is ($store.listeners.first: * === &listener), Nil, 'unsubscribe removes listener';
+    is &listener (elem) $store.listeners, False, 'unsubscribe removes listener';
   }
 }
 

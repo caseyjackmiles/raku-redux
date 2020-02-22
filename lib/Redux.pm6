@@ -7,7 +7,7 @@ role Action is export {
 class Store is export {
   has $!state is required;
   has &!reducer is required;
-  has Callable @.listeners;
+  has Set $.listeners = set();
 
   submethod BUILD(:$!state, :&!reducer) { }
 
@@ -15,18 +15,18 @@ class Store is export {
     $!state;
   }
 
-  method dispatch(Action $action) {
+  method dispatch(Action:D $action) {
     $!state = &!reducer($!state, $action);
 
-    for @.listeners { $_() } # invoke each subscribed listener
+    for $.listeners.keys { $_() } # invoke each subscribed listener
     $action;
   }
 
   method subscribe(&listener --> Callable) {
     return -> {} without &listener;
 
-    @.listeners.push(&listener);
-    -> { @.listeners = (@.listeners (-) &listener).keys } # unsubscribes listener when invoked
+    $!listeners = $.listeners (|) &listener;
+    -> { $!listeners = $.listeners (-) &listener } # unsubscribes listener when invoked
   }
 
   method replace-reducer(&next-reducer) {
