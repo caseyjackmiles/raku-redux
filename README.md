@@ -1,6 +1,6 @@
 # raku-redux
 
-Redux-styled state management for Raku
+Redux-style state management for Raku
 
 ## development test-drive
 
@@ -8,6 +8,7 @@ Start REPL with library preloaded: `PERL6LIB=lib perl6`
 
 ```perl6
 use Redux;
+
 my $counter = 0;
 my &reducer = -> $state, $action {
   given $action.type {
